@@ -5,6 +5,8 @@ import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
+import { setInitialProfile } from '../utils/setInitialProfile';
+
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Signup'>;
 
@@ -23,6 +25,8 @@ export default function SignupScreen({ navigation }: Props) {
         usage: 0,
         createdAt: new Date().toISOString(),
       });
+
+      await setInitialProfile(uid); // This adds the structured Profile
 
       Alert.alert('Success', 'Account created!');
       navigation.navigate('Login');
