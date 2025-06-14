@@ -1,7 +1,9 @@
 #!/bin/bash
 
 ### ✅ Professional Git Push Script for SelahGPT ###
-# Usage: Run with `bash git-push.sh` OR make executable with `chmod +x git-push.sh` then `./git-push.sh`
+# Usage: Run with `bash git-push.sh` OR make executable with `chmod +x git-push.sh`
+
+### Execute Push Process ### ./git-push.sh
 
 # --- LINT AND FORMAT ---
 echo "✨ Linting and formatting code with ESLint + Prettier..."
@@ -17,7 +19,7 @@ fi
 
 # --- SEMANTIC COMMIT PROMPT ---
 echo "\n📝 What type of change is this?"
-select opt in "feat" "fix" "chore" "docs" "refactor" "test" "style" "perf" "break!"; do
+select opt in "(Feat)" "(Fix)" "(Chore)" "(Docs)" "(Refactor)" "(Test)" "(Style)" "(Perf)" "(Break!)"; do
   case $opt in
     *) break;;
   esac
