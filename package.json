@@ -2,11 +2,17 @@
   "name": "selahgpt",
   "version": "1.0.0",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "fix-imports": "replace-in-files '**/*.{ts,tsx}' --searchString '@utils/' --replaceString '../../utils/'",
+    "fix-utils": "replace-in-files '**/*.{ts,tsx}' --searchString '@utils/' --replaceString '../../utils/'",
+    "fix-services": "replace-in-files '**/*.{ts,tsx}' --searchString '@services/' --replaceString '../../services/'",
+    "fix-types": "replace-in-files '**/*.{ts,tsx}' --searchString '@types/' --replaceString '../../types/'",
+    "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^6.1.0",
@@ -15,7 +21,7 @@
     "@react-navigation/native-stack": "^7.3.14",
     "axios": "^1.9.0",
     "dayjs": "^1.11.13",
-    "expo": "~53.0.11",
+    "expo": "^53.0.11",
     "expo-in-app-purchases": "^14.5.0",
     "expo-status-bar": "~2.2.3",
     "firebase": "^11.9.1",
@@ -34,8 +40,15 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@eslint/js": "^9.29.0",
     "@types/react": "~19.0.10",
-    "typescript": "~5.8.3"
-  },
-  "private": true
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^9.29.0",
+    "eslint-plugin-import": "^2.31.0",
+    "replace-in-files": "^3.0.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.34.0"
+  }
 }

@@ -1,0 +1,21 @@
+export type RootStackParamList = {
+  Signup: undefined;
+  Login: undefined;
+  Home: undefined;
+  Chat: undefined;
+  Profile: undefined;
+  Account: undefined;
+  Upgrade: undefined;
+  FitnessProfile: undefined;
+  EditFitnessProfile: undefined;
+  FaithProfile: undefined;
+  EditFaithProfile: undefined;
+  BudgetPieChart: undefined;
+  FinanceProfile: undefined;
+  EditFinanceProfile: undefined;
+  BudgetEntry: undefined;
+  HealthProfile: undefined;
+  EditHealthProfile: undefined;
+  FamilyProfile: undefined;
+  EditFamilyProfile: undefined;
+};
