@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, Button } from 'react-native';
-import { getFinanceProfile } from '@services/finance';
+import React, { useEffect, useState } from "react";
+import { ScrollView, Text, Button } from "react-native";
+import { getFinanceProfile } from "@services/finance";
 
 export default function FinanceProfileScreen({ navigation, route }) {
   const user = route.params.user;
@@ -22,27 +22,30 @@ export default function FinanceProfileScreen({ navigation, route }) {
 
       <Text>Income Type: {profile.incomeType}</Text>
       <Text>Budget Style: {profile.budgetStyle}</Text>
-      <Text>Uses Budget App: {profile.usesBudgetApp ? 'Yes' : 'No'}</Text>
+      <Text>Uses Budget App: {profile.usesBudgetApp ? "Yes" : "No"}</Text>
       <Text>Giving Style: {profile.givingStyle}</Text>
       <Text>Money Mindset: {profile.moneyMindset}</Text>
-      <Text>Wants Scripture Advice: {profile.wantsScriptureFinancialAdvice ? 'Yes' : 'No'}</Text>
+      <Text>
+        Wants Scripture Advice:{" "}
+        {profile.wantsScriptureFinancialAdvice ? "Yes" : "No"}
+      </Text>
 
       {profile.spiritualViewOnMoney && (
         <Text>Spiritual View on Money: {profile.spiritualViewOnMoney}</Text>
       )}
 
       {profile.financialGoals?.length > 0 && (
-        <Text>Goals: {profile.financialGoals.join(', ')}</Text>
+        <Text>Goals: {profile.financialGoals.join(", ")}</Text>
       )}
 
       {profile.financialStressors?.length > 0 && (
-        <Text>Stressors: {profile.financialStressors.join(', ')}</Text>
+        <Text>Stressors: {profile.financialStressors.join(", ")}</Text>
       )}
 
       <Button
         title="Edit Finance Profile"
         onPress={() =>
-          navigation.navigate('EditFinanceProfile', {
+          navigation.navigate("EditFinanceProfile", {
             user,
             profile,
           })
@@ -51,12 +54,12 @@ export default function FinanceProfileScreen({ navigation, route }) {
 
       <Button
         title="Manage Budget"
-        onPress={() => navigation.navigate('BudgetEntry', { user })}
+        onPress={() => navigation.navigate("BudgetEntry", { user })}
       />
 
       <Button
         title="View Budget Chart"
-        onPress={() => navigation.navigate('BudgetPieChart', { user })}
+        onPress={() => navigation.navigate("BudgetPieChart", { user })}
       />
     </ScrollView>
   );

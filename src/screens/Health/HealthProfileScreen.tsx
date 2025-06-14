@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, Button } from 'react-native';
-import { getHealthProfile } from '@services/health';
-import { HealthProfile } from '@types/HealthProfile';
+import React, { useEffect, useState } from "react";
+import { ScrollView, Text, Button } from "react-native";
+import { getHealthProfile } from "@services/health";
+import { HealthProfile } from "@types/HealthProfile";
 
 export default function HealthProfileScreen({ navigation, route }) {
   const user = route.params.user;
@@ -22,15 +22,17 @@ export default function HealthProfileScreen({ navigation, route }) {
       <Text style={{ fontSize: 24, marginBottom: 16 }}>Health Profile</Text>
 
       {profile.healthConditions?.length > 0 && (
-        <Text>Conditions: {profile.healthConditions.join(', ')}</Text>
+        <Text>Conditions: {profile.healthConditions.join(", ")}</Text>
       )}
 
       {profile.dietaryRestrictions?.length > 0 && (
-        <Text>Dietary Restrictions: {profile.dietaryRestrictions.join(', ')}</Text>
+        <Text>
+          Dietary Restrictions: {profile.dietaryRestrictions.join(", ")}
+        </Text>
       )}
 
       {profile.allergies?.length > 0 && (
-        <Text>Allergies: {profile.allergies.join(', ')}</Text>
+        <Text>Allergies: {profile.allergies.join(", ")}</Text>
       )}
 
       {profile.sleepQuality && (
@@ -46,7 +48,7 @@ export default function HealthProfileScreen({ navigation, route }) {
       )}
 
       {profile.recentSymptoms?.length > 0 && (
-        <Text>Recent Symptoms: {profile.recentSymptoms.join(', ')}</Text>
+        <Text>Recent Symptoms: {profile.recentSymptoms.join(", ")}</Text>
       )}
 
       {profile.mentalHealthFocus && (
@@ -54,13 +56,14 @@ export default function HealthProfileScreen({ navigation, route }) {
       )}
 
       <Text>
-        Wants Health Encouragement: {profile.wantsHealthEncouragement ? 'Yes' : 'No'}
+        Wants Health Encouragement:{" "}
+        {profile.wantsHealthEncouragement ? "Yes" : "No"}
       </Text>
 
       <Button
         title="Edit Health Profile"
         onPress={() =>
-          navigation.navigate('EditHealthProfile', {
+          navigation.navigate("EditHealthProfile", {
             user,
             profile,
           })

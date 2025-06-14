@@ -1,6 +1,6 @@
-import { db } from './firebase';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { FaithProfile } from '@types/FaithProfile';
+import { db } from "./firebase";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { FaithProfile } from "@types/FaithProfile";
 
 /**
  * Save or update the user's faith profile.
@@ -8,16 +8,16 @@ import { FaithProfile } from '@types/FaithProfile';
  */
 export const saveFaithProfile = async (
   userId: string,
-  data: Partial<FaithProfile>
+  data: Partial<FaithProfile>,
 ) => {
-  const ref = doc(db, 'users', userId, 'modules', 'faith');
+  const ref = doc(db, "users", userId, "modules", "faith");
   await setDoc(
     ref,
     {
       ...data,
       updatedAt: serverTimestamp(),
     },
-    { merge: true }
+    { merge: true },
   );
 };
 
@@ -26,9 +26,9 @@ export const saveFaithProfile = async (
  * Returns null if the profile doesn't exist yet.
  */
 export const getFaithProfile = async (
-  userId: string
+  userId: string,
 ): Promise<FaithProfile | null> => {
-  const ref = doc(db, 'users', userId, 'modules', 'faith');
+  const ref = doc(db, "users", userId, "modules", "faith");
   const snap = await getDoc(ref);
   return snap.exists() ? (snap.data() as FaithProfile) : null;
 };

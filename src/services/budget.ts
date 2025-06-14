@@ -1,6 +1,6 @@
-import { db } from './firebase';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { MonthlyBudget } from '@types/MonthlyBudget';
+import { db } from "./firebase";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { MonthlyBudget } from "@types/MonthlyBudget";
 
 /**
  * Save or update the user's budget for a given month.
@@ -8,9 +8,9 @@ import { MonthlyBudget } from '@types/MonthlyBudget';
 export const saveMonthlyBudget = async (
   userId: string,
   monthId: string,
-  data: Partial<MonthlyBudget>
+  data: Partial<MonthlyBudget>,
 ) => {
-  const ref = doc(db, 'users', userId, 'modules', 'finance', 'budget', monthId);
+  const ref = doc(db, "users", userId, "modules", "finance", "budget", monthId);
   await setDoc(
     ref,
     {
@@ -18,7 +18,7 @@ export const saveMonthlyBudget = async (
       month: monthId,
       updatedAt: serverTimestamp(),
     },
-    { merge: true }
+    { merge: true },
   );
 };
 
@@ -27,9 +27,9 @@ export const saveMonthlyBudget = async (
  */
 export const getMonthlyBudget = async (
   userId: string,
-  monthId: string
+  monthId: string,
 ): Promise<MonthlyBudget | null> => {
-  const ref = doc(db, 'users', userId, 'modules', 'finance', 'budget', monthId);
+  const ref = doc(db, "users", userId, "modules", "finance", "budget", monthId);
   const snap = await getDoc(ref);
   return snap.exists() ? (snap.data() as MonthlyBudget) : null;
 };

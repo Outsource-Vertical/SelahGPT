@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, Button } from 'react-native';
-import { getFamilyProfile } from '@services/family';
-import { FamilyProfile } from '@types/FamilyProfile';
+import React, { useEffect, useState } from "react";
+import { ScrollView, Text, Button } from "react-native";
+import { getFamilyProfile } from "@services/family";
+import { FamilyProfile } from "@types/FamilyProfile";
 
 export default function FamilyProfileScreen({ navigation, route }) {
   const user = route.params.user;
@@ -30,23 +30,25 @@ export default function FamilyProfileScreen({ navigation, route }) {
         <Text>Children Ages: {profile.childrenAges}</Text>
       )}
       {profile.majorFamilyDates?.length > 0 && (
-        <Text>Important Dates: {profile.majorFamilyDates.join(', ')}</Text>
+        <Text>Important Dates: {profile.majorFamilyDates.join(", ")}</Text>
       )}
       {profile.currentFamilyFocus && (
         <Text>Current Focus: {profile.currentFamilyFocus}</Text>
       )}
       {profile.familyChallenges?.length > 0 && (
-        <Text>Challenges: {profile.familyChallenges.join(', ')}</Text>
+        <Text>Challenges: {profile.familyChallenges.join(", ")}</Text>
       )}
       {profile.gratitudeNotes?.length > 0 && (
-        <Text>Gratitude: {profile.gratitudeNotes.join(', ')}</Text>
+        <Text>Gratitude: {profile.gratitudeNotes.join(", ")}</Text>
       )}
-      <Text>Wants Encouragement: {profile.wantsFamilyEncouragement ? 'Yes' : 'No'}</Text>
+      <Text>
+        Wants Encouragement: {profile.wantsFamilyEncouragement ? "Yes" : "No"}
+      </Text>
 
       <Button
         title="Edit Family Profile"
         onPress={() =>
-          navigation.navigate('EditFamilyProfile', {
+          navigation.navigate("EditFamilyProfile", {
             user,
             profile,
           })

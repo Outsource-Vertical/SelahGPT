@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, ScrollView } from 'react-native';
-import { getFitnessProfile } from '@services/fitness';
-import { FitnessProfile } from '@types/FitnessProfile';
-import { auth } from '@services/firebase';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from "react";
+import { View, Text, Button, ScrollView } from "react-native";
+import { getFitnessProfile } from "@services/fitness";
+import { FitnessProfile } from "@types/FitnessProfile";
+import { auth } from "@services/firebase";
+import { useNavigation } from "@react-navigation/native";
 
 export default function FitnessProfileScreen() {
   const [profile, setProfile] = useState<FitnessProfile | null>(null);
@@ -30,7 +30,7 @@ export default function FitnessProfileScreen() {
         <Text>No fitness profile found yet.</Text>
         <Button
           title="Create Profile"
-          onPress={() => navigation.navigate('EditFitnessProfile')}
+          onPress={() => navigation.navigate("EditFitnessProfile")}
         />
       </View>
     );
@@ -48,16 +48,16 @@ export default function FitnessProfileScreen() {
         Height: {profile.height}
       </Text>
       <Text style={{ fontSize: 18, marginBottom: 20 }}>
-        Workout Style:{' '}
+        Workout Style:{" "}
         {Array.isArray(profile.preferredWorkoutTypes)
-          ? profile.preferredWorkoutTypes.join(', ')
-          : 'Not specified'}
+          ? profile.preferredWorkoutTypes.join(", ")
+          : "Not specified"}
       </Text>
 
       <Button
         title="Edit Profile"
         onPress={() =>
-          navigation.navigate('EditFitnessProfile', {
+          navigation.navigate("EditFitnessProfile", {
             user: auth.currentUser,
             profile,
           })

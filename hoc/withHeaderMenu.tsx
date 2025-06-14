@@ -1,5 +1,5 @@
-import React, { useLayoutEffect } from 'react';
-import HeaderMenu from '../src/components/HeaderMenu';
+import React, { useLayoutEffect } from "react";
+import HeaderMenu from "../src/components/HeaderMenu";
 
 export default function withHeaderMenu(Component) {
   return function WrappedComponent(props) {

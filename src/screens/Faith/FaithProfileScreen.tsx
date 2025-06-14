@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, Button } from 'react-native';
-import { getFaithProfile } from '@services/faith';
-import { FaithProfile } from '@types/FaithProfile';
-import { auth } from '@services/firebase';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from "react";
+import { ScrollView, Text, View, Button } from "react-native";
+import { getFaithProfile } from "@services/faith";
+import { FaithProfile } from "@types/FaithProfile";
+import { auth } from "@services/firebase";
+import { useNavigation } from "@react-navigation/native";
 
 export default function FaithProfileScreen() {
   const [profile, setProfile] = useState<FaithProfile | null>(null);
@@ -30,7 +30,7 @@ export default function FaithProfileScreen() {
         <Text>No faith profile found yet.</Text>
         <Button
           title="Create Profile"
-          onPress={() => navigation.navigate('EditFaithProfile')}
+          onPress={() => navigation.navigate("EditFaithProfile")}
         />
       </View>
     );
@@ -57,11 +57,11 @@ export default function FaithProfileScreen() {
       </Text>
 
       <Text style={{ fontSize: 18, marginBottom: 10 }}>
-        Spiritual Goals: {profile.spiritualGoals?.join(', ') || 'None'}
+        Spiritual Goals: {profile.spiritualGoals?.join(", ") || "None"}
       </Text>
 
       <Text style={{ fontSize: 18, marginBottom: 10 }}>
-        Favorite Scriptures: {profile.favoriteScriptures?.join(', ') || 'None'}
+        Favorite Scriptures: {profile.favoriteScriptures?.join(", ") || "None"}
       </Text>
 
       {profile.accountabilityPartner && (
@@ -75,19 +75,20 @@ export default function FaithProfileScreen() {
       </Text>
 
       <Text style={{ fontSize: 18, marginBottom: 10 }}>
-        Scripture Encouragement: {profile.wantsScriptureEncouragement ? 'Yes' : 'No'}
+        Scripture Encouragement:{" "}
+        {profile.wantsScriptureEncouragement ? "Yes" : "No"}
       </Text>
 
       {profile.currentStruggles?.length > 0 && (
         <Text style={{ fontSize: 18, marginBottom: 20 }}>
-          Current Struggles: {profile.currentStruggles.join(', ')}
+          Current Struggles: {profile.currentStruggles.join(", ")}
         </Text>
       )}
 
       <Button
         title="Edit Faith Profile"
         onPress={() =>
-          navigation.navigate('EditFaithProfile', {
+          navigation.navigate("EditFaithProfile", {
             user: auth.currentUser,
             profile,
           })

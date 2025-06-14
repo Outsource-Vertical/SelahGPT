@@ -1,6 +1,10 @@
-import { Pinecone } from '@pinecone-database/pinecone';
-import { getEmbedding } from '@utils/embeddings';
-import { PINECONE_API_KEY, PINECONE_ENVIRONMENT, PINECONE_INDEX_NAME } from '@env';
+import { Pinecone } from "@pinecone-database/pinecone";
+import { getEmbedding } from "@utils/embeddings";
+import {
+  PINECONE_API_KEY,
+  PINECONE_ENVIRONMENT,
+  PINECONE_INDEX_NAME,
+} from "@env";
 
 const pinecone = new Pinecone({
   apiKey: PINECONE_API_KEY,

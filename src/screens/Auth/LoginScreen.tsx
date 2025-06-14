@@ -1,30 +1,30 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '@services/firebase';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@navigation/types';
+import { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "@services/firebase";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@navigation/types";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
 export default function LoginScreen({ navigation }: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert('Welcome back!');
-      navigation.replace('Home');
+      Alert.alert("Welcome back!");
+      navigation.replace("Home");
     } catch (error: unknown) {
-    if (error instanceof Error) {
-    console.error(error);
-    Alert.alert('Login Error', error.message);
-    } else {
-    console.error('Unknown error during login:', error);
-    Alert.alert('Login Error', 'An unknown error occurred.');
-  }
-}
+      if (error instanceof Error) {
+        console.error(error);
+        Alert.alert("Login Error", error.message);
+      } else {
+        console.error("Unknown error during login:", error);
+        Alert.alert("Login Error", "An unknown error occurred.");
+      }
+    }
   };
 
   return (
@@ -45,7 +45,10 @@ export default function LoginScreen({ navigation }: Props) {
         secureTextEntry
       />
       <Button title="Log In" onPress={handleLogin} />
-      <Button title="Create Account" onPress={() => navigation.navigate('Signup')} />
+      <Button
+        title="Create Account"
+        onPress={() => navigation.navigate("Signup")}
+      />
     </View>
   );
 }
@@ -58,16 +61,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
   },
 });
-
-
-

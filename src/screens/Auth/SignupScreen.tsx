@@ -1,44 +1,47 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@services/firebase';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@navigation/types'; //
-import { setInitialProfile } from '@utils/setInitialProfile';
+import { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@services/firebase";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@navigation/types"; //
+import { setInitialProfile } from "@utils/setInitialProfile";
 
-
-type Props = NativeStackScreenProps<RootStackParamList, 'Signup'>;
+type Props = NativeStackScreenProps<RootStackParamList, "Signup">;
 
 export default function SignupScreen({ navigation }: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSignup = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const uid = userCredential.user.uid;
 
-      await setDoc(doc(db, 'users', uid), {
+      await setDoc(doc(db, "users", uid), {
         email,
-        tier: 'free',
+        tier: "free",
         usage: 0,
         createdAt: new Date().toISOString(),
       });
 
       await setInitialProfile(uid); // This adds the structured Profile
 
-      Alert.alert('Success', 'Account created!');
-      navigation.navigate('Login');
+      Alert.alert("Success", "Account created!");
+      navigation.navigate("Login");
     } catch (error: unknown) {
-        if (error instanceof Error) {
+      if (error instanceof Error) {
         console.error(error);
-        Alert.alert('Signup Error', error.message);
+        Alert.alert("Signup Error", error.message);
       } else {
-        console.error('Unknown error during signup:', error);
-        Alert.alert('Signup Error', 'An unknown error occurred.');
-  }
-}
+        console.error("Unknown error during signup:", error);
+        Alert.alert("Signup Error", "An unknown error occurred.");
+      }
+    }
   };
 
   return (
@@ -59,7 +62,10 @@ export default function SignupScreen({ navigation }: Props) {
         secureTextEntry
       />
       <Button title="Sign Up" onPress={handleSignup} />
-      <Button title="Back to Login" onPress={() => navigation.navigate('Login')} />
+      <Button
+        title="Back to Login"
+        onPress={() => navigation.navigate("Login")}
+      />
     </View>
   );
 }
@@ -72,11 +78,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,

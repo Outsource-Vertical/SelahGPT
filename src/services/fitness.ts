@@ -3,7 +3,10 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { FitnessProfile } from "@types/FitnessProfile";
 
 // Save function (already present)
-export async function saveFitnessProfile(userId: string, data: Partial<FitnessProfile>) {
+export async function saveFitnessProfile(
+  userId: string,
+  data: Partial<FitnessProfile>,
+) {
   const fitnessRef = doc(db, "users", userId, "modules", "fitness");
   const payload = {
     ...data,
@@ -13,7 +16,9 @@ export async function saveFitnessProfile(userId: string, data: Partial<FitnessPr
 }
 
 // 🆕 Add this function:
-export async function getFitnessProfile(userId: string): Promise<FitnessProfile | null> {
+export async function getFitnessProfile(
+  userId: string,
+): Promise<FitnessProfile | null> {
   try {
     const fitnessRef = doc(db, "users", userId, "modules", "fitness");
     const docSnap = await getDoc(fitnessRef);

@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView } from 'react-native';
-import { saveFitnessProfile } from '@services/fitness';
-import { auth } from '@services/firebase';
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, ScrollView } from "react-native";
+import { saveFitnessProfile } from "@services/fitness";
+import { auth } from "@services/firebase";
 
 export default function EditFitnessProfileScreen({ route, navigation }) {
   const { user, profile } = route.params ?? {};
   const currentUser = user || auth.currentUser;
 
-  const [currentWeight, setCurrentWeight] = useState(profile?.currentWeight?.toString() || '');
-  const [targetWeight, setTargetWeight] = useState(profile?.targetWeight?.toString() || '');
-  const [height, setHeight] = useState(profile?.height || '');
+  const [currentWeight, setCurrentWeight] = useState(
+    profile?.currentWeight?.toString() || "",
+  );
+  const [targetWeight, setTargetWeight] = useState(
+    profile?.targetWeight?.toString() || "",
+  );
+  const [height, setHeight] = useState(profile?.height || "");
 
   const handleSave = async () => {
     if (!currentUser) return;
@@ -25,7 +29,9 @@ export default function EditFitnessProfileScreen({ route, navigation }) {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <Text style={{ fontSize: 20, marginBottom: 16 }}>Edit Fitness Profile</Text>
+      <Text style={{ fontSize: 20, marginBottom: 16 }}>
+        Edit Fitness Profile
+      </Text>
 
       <Text>Current Weight</Text>
       <TextInput
