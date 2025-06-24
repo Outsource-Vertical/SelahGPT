@@ -2,11 +2,16 @@ import axios from "axios";
 import { db } from "./firebase"; // your firebase-admin initialized Firestore instance
 import { ENV } from "./env";
 
+/**
+ * Generate a vector embedding from input text using OpenAI's embedding API
+ */
 export const getEmbedding = async (text: string): Promise<number[]> => {
   if (!text) throw new Error("Missing text input for embedding");
 
   try {
-    const res = await axios.post(
+    const res = await axios.post<{
+      data: { embedding: number[] }[];
+    }>(
       "https://api.openai.com/v1/embeddings",
       {
         input: text,
@@ -30,6 +35,9 @@ export const getEmbedding = async (text: string): Promise<number[]> => {
   }
 };
 
+/**
+ * Generates an embedding and stores it in Firestore under the user's memory collection
+ */
 export const embedAndstoreMemory = async ({
   uid,
   message,
