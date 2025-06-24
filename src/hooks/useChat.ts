@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
+import { Alert } from "react-native";
 import { OPENAI_API_KEY } from "@env";
 import { db, auth } from "@services/firebase";
+import { storeMemory, retrieveMemory } from "../services/memory";
+import { inferModule, parseProfileUpdate } from "../utils/chatParser";
+import { ENV } from "@utils/env";
+
 import {
   doc,
   getDoc,
@@ -9,13 +14,14 @@ import {
   serverTimestamp,
   increment,
 } from "firebase/firestore";
-import { Alert } from "react-native";
-import { parseProfileUpdate } from "../utils/chatParser";
 import { saveFitnessProfile } from "../services/fitness";
 import { saveFaithProfile } from "../services/faith";
 import { saveFinanceProfile } from "../services/finance";
 import { saveGoalsProfile } from "../services/goals";
 import { saveHealthProfile } from "../services/health";
+
+import uuid from "react-native-uuid";
+const uuidv4 = () => uuid.v4().toString();
 
 interface Message {
   role: "user" | "assistant";
@@ -28,12 +34,31 @@ const TIER_LIMITS: Record<string, number> = {
   "faith+": 100,
 };
 
+const saveProfileByModule = async (
+  module: string,
+  uid: string,
+  updates: any,
+) => {
+  const map: Record<string, (uid: string, updates: any) => Promise<void>> = {
+    fitness: saveFitnessProfile,
+    faith: saveFaithProfile,
+    finance: saveFinanceProfile,
+    goals: saveGoalsProfile,
+    health: saveHealthProfile,
+  };
+
+  const saveFn = map[module];
+  if (!saveFn) throw new Error(`Unsupported module: ${module}`);
+  await saveFn(uid, updates);
+};
+
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState(0);
   const [blocked, setBlocked] = useState(false);
   const [tier, setTier] = useState("free");
+  const [threadId] = useState(() => uuid.v4().toString());
 
   useEffect(() => {
     const fetchUsage = async () => {
@@ -81,10 +106,7 @@ export function useChat() {
         }
       } catch (err) {
         console.error("Failed to fetch profile:", err);
-        Alert.alert(
-          "Error",
-          "Failed to access your chat profile. Check Firestore rules.",
-        );
+        Alert.alert("Error", "Failed to access your chat profile.");
       }
     };
 
@@ -108,40 +130,36 @@ export function useChat() {
     setMessages(newMessages);
     setLoading(true);
 
-    // 🧠 Try to parse and handle profile update before using tokens
-    const profileUpdate = parseProfileUpdate(text);
+    try {
+      const module = inferModule(text);
 
-    if (profileUpdate) {
-      const { module, field, value } = profileUpdate;
+      // 🔄 Save user message to memory
+      await storeMemory({
+        userId: uid,
+        module,
+        text,
+        role: "user",
+        threadId,
+      });
 
-      try {
-        switch (module) {
-          case "fitness":
-            await saveFitnessProfile(uid, { [field]: value });
-            break;
-          case "faith":
-            await saveFaithProfile(uid, { [field]: value });
-            break;
-          case "finance":
-            await saveFinanceProfile(uid, { [field]: value });
-            break;
-          case "goals":
-            await saveGoalsProfile(uid, { [field]: value });
-            break;
-          case "health":
-            await saveHealthProfile(uid, { [field]: value });
-            break;
-          default:
-            throw new Error(`Unsupported module: ${module}`);
-        }
+      // 🧠 Profile Update Attempt
+      const profileUpdate = parseProfileUpdate(text);
+      if (profileUpdate) {
+        const { module, field, value } = profileUpdate;
+        await saveProfileByModule(module, uid, { [field]: value });
 
-        setMessages([
-          ...newMessages,
-          {
-            role: "assistant",
-            content: `Got it — I’ve updated your ${field.replace(/([A-Z])/g, " $1").toLowerCase()} to ${value}.`,
-          },
-        ]);
+        const reply = `Got it — I’ve updated your ${field.replace(/([A-Z])/g, " $1").toLowerCase()} to ${value}.`;
+
+        setMessages([...newMessages, { role: "assistant", content: reply }]);
+
+        await storeMemory({
+          userId: uid,
+          module,
+          text: reply,
+          role: "assistant",
+          threadId,
+          tone: "informative",
+        });
 
         await updateDoc(doc(db, "users", uid), {
           usage: increment(1),
@@ -154,39 +172,66 @@ export function useChat() {
 
         setLoading(false);
         return;
-      } catch (err) {
-        console.error("Profile update failed:", err);
-        Alert.alert("Error", "Failed to update your profile.");
-        setLoading(false);
-        return;
       }
-    }
 
-    // 🧠 Fallback to OpenAI
-    try {
+      // 🔍 Recall prior relevant memory
+      const memoryResults = await retrieveMemory({
+        userId: uid,
+        module,
+        query: text,
+        topK: 5,
+      });
+
+      const memorySummary = memoryResults
+        .map((m) => `- ${m.metadata?.text}`)
+        .join("\n");
+
+      const openaiMessages = [
+        {
+          role: "system",
+          content: memoryResults.length
+            ? `Here are past relevant memories:\n${memorySummary}`
+            : `No prior memory available.`,
+        },
+        ...newMessages,
+      ];
+
+      // 💬 Send to GPT
       const res = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          Authorization: `Bearer ${ENV.OPENAI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: "gpt-4o",
-          messages: newMessages,
+          messages: openaiMessages,
         }),
       });
 
       const data = await res.json();
-
       if (!res.ok || !data?.choices?.[0]?.message?.content) {
         throw new Error("OpenAI response failed");
       }
 
       const aiReply = data.choices[0].message.content.trim();
-      setMessages([...newMessages, { role: "assistant", content: aiReply }]);
+      const updatedMessages = [
+        ...newMessages,
+        { role: "assistant", content: aiReply },
+      ];
+      setMessages(updatedMessages);
 
-      const docRef = doc(db, "users", uid);
-      await updateDoc(docRef, {
+      // 💾 Store assistant reply
+      await storeMemory({
+        userId: uid,
+        module,
+        text: aiReply,
+        role: "assistant",
+        threadId,
+        tone: "gentle",
+      });
+
+      await updateDoc(doc(db, "users", uid), {
         usage: increment(1),
         lastUsed: serverTimestamp(),
       });
@@ -195,10 +240,10 @@ export function useChat() {
       setUsage(newUsage);
       if (newUsage >= (TIER_LIMITS[tier] ?? 10)) setBlocked(true);
     } catch (error) {
-      console.error("Error talking to GPT:", error);
+      console.error("Error sending message:", error);
       Alert.alert(
         "Error",
-        "There was a problem talking to GPT or saving usage.",
+        "Something went wrong while processing your message.",
       );
     } finally {
       setLoading(false);

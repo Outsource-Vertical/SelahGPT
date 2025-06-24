@@ -1,31 +1,66 @@
-import { db, auth } from "@services/firebase";
-import {
-  doc,
-  setDoc,
-  addDoc,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
-import { getEmbedding } from "./embeddings";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "../services/firebase";
 
-export async function storeMemory({
+const callstoreMemory = httpsCallable(functions, "storeMemory");
+const callRetrieveMemory = httpsCallable(functions, "retrieveMemory");
+
+export const storeMemory = async ({
   userId,
   module,
   text,
-  metadata = {},
+  role = "user",
+  threadId,
+  tags = [],
+  tone,
 }: {
   userId: string;
   module: string;
   text: string;
-  metadata?: Record<string, any>;
-}) {
-  const memoryRef = collection(db, "users", userId, "memories");
-  const embedding = await getEmbedding(text); // Future step
-  await addDoc(memoryRef, {
-    module,
-    text,
-    embedding,
-    metadata,
-    createdAt: serverTimestamp(),
-  });
-}
+  role?: string;
+  threadId?: string;
+  tags?: string[];
+  tone?: string;
+}) => {
+  try {
+    const res = await callstoreMemory({
+      userId,
+      module,
+      text,
+      role,
+      threadId,
+      tags,
+      tone,
+    });
+
+    return res?.data ?? { success: false, message: "Unknown error" };
+  } catch (err) {
+    console.error("❌ storeMemory (client) failed:", err);
+    return { success: false, message: "Exception thrown" };
+  }
+};
+
+export const retrieveMemory = async ({
+  userId,
+  module,
+  query,
+  topK = 5,
+}: {
+  userId: string;
+  module: string;
+  query: string;
+  topK?: number;
+}) => {
+  try {
+    const res = await callRetrieveMemory({
+      userId,
+      module,
+      query,
+      topK,
+    });
+
+    return res?.data?.matches ?? [];
+  } catch (err) {
+    console.error("❌ retrieveMemory (client) failed:", err);
+    return [];
+  }
+};

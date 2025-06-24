@@ -1,6 +1,7 @@
 import { MonthlyBudget } from "../../src/types/MonthlyBudget";
 import { getEmbedding } from "../embeddings";
 import { OPENAI_API_KEY } from "@env";
+import { ENV } from "@utils/env";
 
 export const getBudgetFeedback = async (
   budget: MonthlyBudget,
@@ -34,7 +35,7 @@ Start your response with: "Here's what I noticed..."
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${ENV.OPENAI_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

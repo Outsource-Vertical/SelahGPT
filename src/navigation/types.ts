@@ -18,4 +18,5 @@ export type RootStackParamList = {
   EditHealthProfile: undefined;
   FamilyProfile: undefined;
   EditFamilyProfile: undefined;
+  MemoryDebug: undefined;
 };

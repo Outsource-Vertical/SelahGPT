@@ -25,5 +25,13 @@
       "@context/*": ["src/context/*"]
     }
   },
-  "include": ["src", "types"]
+  "include": [
+    "src",
+    "types",
+    "functions/src/utils/embeddings.ts",
+    "functions/src/utils/pineconeClient.ts",
+    "functions/src/utils/summaryGenerator.ts",
+    "functions/src/utils/env.ts",
+    "functions/src/utils/tagExtractor.ts"
+  ]
 }

@@ -1,48 +1,70 @@
-import { Pinecone } from "@pinecone-database/pinecone";
 import { getEmbedding } from "@utils/embeddings";
-import {
-  PINECONE_API_KEY,
-  PINECONE_ENVIRONMENT,
-  PINECONE_INDEX_NAME,
-} from "@env";
+import { tagExtractor } from "@utils/tagExtractor";
+import { pineconeUpsert, pineconeQuery } from "@utils/pineconeClient";
+import uuid from "react-native-uuid";
+const uuidv4 = () => uuid.v4().toString();
 
-const pinecone = new Pinecone({
-  apiKey: PINECONE_API_KEY,
-  environment: PINECONE_ENVIRONMENT,
-});
-
-const index = pinecone.index(PINECONE_INDEX_NAME);
-
-// 🔹 Store memory (text → vector → Pinecone)
+// 🔹 Store memory with dedup, tagging, metadata
 export const storeMemory = async ({
   userId,
   module,
   text,
-  metadata = {},
+  role = "user",
+  threadId = uuid.v4().toString(),
+  tags = [],
+  tone,
 }: {
   userId: string;
   module: string;
   text: string;
-  metadata?: Record<string, unknown>;
+  role?: "user" | "assistant";
+  threadId?: string;
+  tags?: string[];
+  tone?: string;
 }) => {
-  const embedding = await getEmbedding(text);
-  const id = `${userId}-${module}-${Date.now()}`;
+  try {
+    const embedding = await getEmbedding(text);
+    const vectorId = `${userId}-${module}-${Date.now()}`;
 
-  await index.namespace(userId).upsert([
-    {
-      id,
-      values: embedding,
-      metadata: {
-        ...metadata,
-        module,
-        text,
-        createdAt: new Date().toISOString(),
+    // 🔁 Semantic deduplication
+    const existing = await pineconeQuery(userId, embedding, 3, { module });
+    const isDuplicate = existing?.matches?.some(
+      (match: any) => match.score > 0.95,
+    );
+
+    if (isDuplicate) {
+      console.log("🔁 Duplicate skipped:", text);
+      return;
+    }
+
+    // 🏷️ Tag extraction
+    if (tags.length === 0 && role === "user") {
+      tags = await tagExtractor(text);
+    }
+
+    // 💾 Store vector
+    await pineconeUpsert(userId, [
+      {
+        id: vectorId,
+        values: embedding,
+        metadata: {
+          userId,
+          text,
+          module,
+          role,
+          threadId,
+          createdAt: new Date().toISOString(),
+          ...(tags.length > 0 && { tags }),
+          ...(tone && { tone }),
+        },
       },
-    },
-  ]);
+    ]);
+  } catch (err) {
+    console.error("❌ Memory store failed:", err);
+  }
 };
 
-// 🔹 Retrieve related memories
+// 🔍 Retrieve similar memories
 export const retrieveMemory = async ({
   userId,
   module,
@@ -55,13 +77,13 @@ export const retrieveMemory = async ({
   topK?: number;
 }) => {
   const embedding = await getEmbedding(query);
+  const result = await pineconeQuery(userId, embedding, topK, { module });
+  return result?.matches || [];
+};
 
-  const results = await index.namespace(userId).query({
-    vector: embedding,
-    topK,
-    filter: { module },
-    includeMetadata: true,
-  });
-
-  return results.matches || [];
+// 🧪 Get all memories for debugging
+export const getAllMemoriesForUser = async (userId: string): Promise<any[]> => {
+  const dummy = Array(1536).fill(0); // no vector input = closest to "everything"
+  const result = await pineconeQuery(userId, dummy, 100);
+  return result?.matches || [];
 };

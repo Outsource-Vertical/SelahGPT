@@ -1,0 +1,18 @@
+# 🛠️ Compiled JS output
+lib/
+lib/**/*.js
+lib/**/*.js.map
+
+# 📦 Node Modules
+node_modules/
+
+# 🔐 Local secrets
+.env
+.env.*
+
+# 📜 Typings (TS legacy)
+typings/
+
+# 🧪 Temp
+*.log
+*.tmp

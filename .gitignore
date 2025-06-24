@@ -1,0 +1,40 @@
+# 🚫 Core ignores
+node_modules/
+.env
+.env.*
+package-lock.json
+yarn.lock
+
+# ⚛️ Expo / React Native
+.expo/
+.expo-shared/
+web-build/
+android/app/google-services.json
+ios/
+android/
+build/
+dist/
+
+# 🧹 System junk
+.DS_Store
+Thumbs.db
+
+# 🔥 Firebase
+firebase-debug.log
+.firebase/
+.firebaserc.local
+firebase.json
+firestore.indexes.json
+firestore.rules
+
+# 🧠 Memory & temporary data
+*.log
+*.tmp
+
+# 💻 IDE files
+.vscode/
+.idea/
+*.sw?
+
+# 📄 Git
+!.gitignore

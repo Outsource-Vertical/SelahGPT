@@ -9,7 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  SafeAreaView,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChat } from "@hooks/useChat";
 import { auth } from "@services/firebase";
 import { storeMemory } from "@utils/memoryManager";
@@ -19,6 +21,7 @@ export default function ChatScreen() {
   const [input, setInput] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
   const { messages, sendMessage, loading } = useChat();
+  const insets = useSafeAreaInsets();
 
   const handleSend = async () => {
     const user = auth.currentUser;
@@ -27,10 +30,8 @@ export default function ChatScreen() {
     if (!user || message === "") return;
 
     try {
-      // Add user message to chat immediately
       sendMessage(message);
 
-      // Store user message in memory
       await storeMemory({
         userId: user.uid,
         module: "chat",
@@ -38,7 +39,6 @@ export default function ChatScreen() {
         metadata: { source: "chat_input" },
       });
 
-      // Detect and update weight
       const weightMatch = message
         .toLowerCase()
         .match(/(?:weight|weigh)[^\d]*(\d{2,3})/);
@@ -57,10 +57,9 @@ export default function ChatScreen() {
         });
 
         setInput("");
-        return; // Skip OpenAI call if handled internally
+        return;
       }
 
-      // Continue to OpenAI if no internal command handled
       await sendMessage(message);
     } catch (err) {
       console.error("Chat error:", err);
@@ -74,52 +73,56 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScrollView
-        style={styles.messages}
-        contentContainerStyle={{ paddingVertical: 16 }}
-        ref={scrollViewRef}
-        onContentSizeChange={() =>
-          scrollViewRef.current?.scrollToEnd({ animated: true })
-        }
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={[styles.container, { paddingBottom: insets.bottom }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 25}
       >
-        {messages.map((msg, index) => (
-          <View
-            key={index}
-            style={[
-              styles.bubble,
-              msg.role === "user" ? styles.userBubble : styles.aiBubble,
-            ]}
-          >
-            <Text style={styles.text}>{msg.content}</Text>
-          </View>
-        ))}
-        {loading && (
-          <View style={styles.aiBubble}>
-            <Text style={styles.text}>Typing...</Text>
-          </View>
-        )}
-      </ScrollView>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type your message..."
-          value={input}
-          onChangeText={setInput}
-          onSubmitEditing={handleSend}
-          returnKeyType="send"
-        />
-        <Button title="Send" onPress={handleSend} disabled={loading} />
-      </View>
-    </KeyboardAvoidingView>
+        <ScrollView
+          style={styles.messages}
+          contentContainerStyle={{ paddingVertical: 16 }}
+          ref={scrollViewRef}
+          onContentSizeChange={() =>
+            scrollViewRef.current?.scrollToEnd({ animated: true })
+          }
+        >
+          {messages.map((msg, index) => (
+            <View
+              key={index}
+              style={[
+                styles.bubble,
+                msg.role === "user" ? styles.userBubble : styles.aiBubble,
+              ]}
+            >
+              <Text style={styles.text}>{msg.content}</Text>
+            </View>
+          ))}
+          {loading && (
+            <View style={styles.aiBubble}>
+              <Text style={styles.text}>Typing...</Text>
+            </View>
+          )}
+        </ScrollView>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type your message..."
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={handleSend}
+            returnKeyType="send"
+          />
+          <Button title="Send" onPress={handleSend} disabled={loading} />
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 16, backgroundColor: "#fff" },
+  safeArea: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, paddingHorizontal: 16 },
   messages: { flex: 1 },
   bubble: {
     padding: 12,

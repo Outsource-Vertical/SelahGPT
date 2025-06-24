@@ -5,40 +5,39 @@ import { Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider as PaperProvider } from "react-native-paper";
-
 import Purchases from "react-native-purchases";
 
 // Screens
-import LoginScreen from "./screens/Auth/LoginScreen";
-import SignupScreen from "./screens/Auth/SignupScreen";
-import UpgradeScreen from "./screens/Auth/UpgradeScreen";
+import LoginScreen from "@screens/Auth/LoginScreen";
+import SignupScreen from "@screens/Auth/SignupScreen";
+import UpgradeScreen from "@screens/Auth/UpgradeScreen";
 
-import BudgetEntryScreen from "./screens/Finance/Budget/BudgetEntryScreen";
-import BudgetPieChartScreen from "./screens/Finance/Budget/BudgetPieChartScreen";
+import BudgetEntryScreen from "@screens/Finance/Budget/BudgetEntryScreen";
+import BudgetPieChartScreen from "@screens/Finance/Budget/BudgetPieChartScreen";
+import FinanceProfileScreen from "@screens/Finance/FinanceProfileScreen";
+import EditFinanceProfileScreen from "@screens/Finance/EditFinanceProfileScreen";
 
-import ChatScreen from "./screens/Chat/ChatScreen";
+import ChatScreen from "@screens/Chat/ChatScreen";
 
-import FaithProfileScreen from "./screens/Faith/FaithProfileScreen";
-import EditFaithProfileScreen from "./screens/Faith/EditFaithProfileScreen";
+import FaithProfileScreen from "@screens/Faith/FaithProfileScreen";
+import EditFaithProfileScreen from "@screens/Faith/EditFaithProfileScreen";
 
-import FamilyProfileScreen from "./screens/Family/FamilyProfileScreen";
-import EditFamilyProfileScreen from "./screens/Family/EditFamilyProfileScreen";
+import FamilyProfileScreen from "@screens/Family/FamilyProfileScreen";
+import EditFamilyProfileScreen from "@screens/Family/EditFamilyProfileScreen";
 
-import FinanceProfileScreen from "./screens/Finance/FinanceProfileScreen";
-import EditFinanceProfileScreen from "./screens/Finance/EditFinanceProfileScreen";
+import FitnessProfileScreen from "@screens/Fitness/FitnessProfileScreen";
+import EditFitnessProfileScreen from "@screens/Fitness/EditFitnessProfileScreen";
 
-import FitnessProfileScreen from "./screens/Fitness/FitnessProfileScreen";
-import EditFitnessProfileScreen from "./screens/Fitness/EditFitnessProfileScreen";
+import HealthProfileScreen from "@screens/Health/HealthProfileScreen";
+import EditHealthProfileScreen from "@screens/Health/EditHealthProfileScreen";
 
-import HealthProfileScreen from "./screens/Health/HealthProfileScreen";
-import EditHealthProfileScreen from "./screens/Health/EditHealthProfileScreen";
+import AccountScreen from "@screens/Other/AccountScreen";
+import HomeScreen from "@screens/Other/HomeScreen";
 
-import AccountScreen from "./screens/Other/AccountScreen";
-import HomeScreen from "./screens/Other/HomeScreen";
+import ProfileScreen from "@screens/Profile/ProfileScreen";
+import MemoryDebugScreen from "@screens/MemoryDebugScreen";
 
-import ProfileScreen from "./screens/Profile/ProfileScreen";
-
-import HeaderMenu from "./components/HeaderMenu";
+import HeaderMenu from "@components/HeaderMenu";
 
 const REVENUECAT_API_KEY = Platform.select({
   ios: "your_ios_key_here",
@@ -68,6 +67,8 @@ export default function App() {
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Account" component={AccountScreen} />
           <Stack.Screen name="Upgrade" component={UpgradeScreen} />
+          <Stack.Screen name="MemoryDebug" component={MemoryDebugScreen} />
+
           <Stack.Screen
             name="FitnessProfile"
             component={FitnessProfileScreen}
@@ -76,15 +77,13 @@ export default function App() {
             name="EditFitnessProfile"
             component={EditFitnessProfileScreen}
           />
+
           <Stack.Screen name="FaithProfile" component={FaithProfileScreen} />
           <Stack.Screen
             name="EditFaithProfile"
             component={EditFaithProfileScreen}
           />
-          <Stack.Screen
-            name="BudgetPieChart"
-            component={BudgetPieChartScreen}
-          />
+
           <Stack.Screen
             name="FinanceProfile"
             component={FinanceProfileScreen}
@@ -93,12 +92,19 @@ export default function App() {
             name="EditFinanceProfile"
             component={EditFinanceProfileScreen}
           />
+
           <Stack.Screen name="BudgetEntry" component={BudgetEntryScreen} />
+          <Stack.Screen
+            name="BudgetPieChart"
+            component={BudgetPieChartScreen}
+          />
+
           <Stack.Screen name="HealthProfile" component={HealthProfileScreen} />
           <Stack.Screen
             name="EditHealthProfile"
             component={EditHealthProfileScreen}
           />
+
           <Stack.Screen name="FamilyProfile" component={FamilyProfileScreen} />
           <Stack.Screen
             name="EditFamilyProfile"
