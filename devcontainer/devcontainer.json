@@ -1,0 +1,15 @@
+{
+  "name": "SelahGPT Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {},
+  "secrets": ["FIREBASE_TOKEN"],
+  "postCreateCommand": "echo 'export FIREBASE_TOKEN=${FIREBASE_TOKEN}' >> ~/.bashrc && source ~/.bashrc && nvm install 20 && nvm use 20 && npm install -g firebase-tools",
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": ["firebase.firebase-tools", "dbaeumer.vscode-eslint"]
+    }
+  }
+}

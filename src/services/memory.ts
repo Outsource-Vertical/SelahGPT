@@ -1,16 +1,15 @@
-import { getEmbedding } from "@utils/embeddings";
 import { tagExtractor } from "@utils/tagExtractor";
-import { pineconeUpsert, pineconeQuery } from "@utils/pineconeClient";
 import uuid from "react-native-uuid";
 const uuidv4 = () => uuid.v4().toString();
 
-// 🔹 Store memory with dedup, tagging, metadata
+const MEMORY_API_URL = "https://<YOUR_CLOUD_RUN_URL>"; // ← Replace with actual deployed Cloud Run URL
+
 export const storeMemory = async ({
   userId,
   module,
   text,
   role = "user",
-  threadId = uuid.v4().toString(),
+  threadId = uuidv4(),
   tags = [],
   tone,
 }: {
@@ -23,48 +22,33 @@ export const storeMemory = async ({
   tone?: string;
 }) => {
   try {
-    const embedding = await getEmbedding(text);
-    const vectorId = `${userId}-${module}-${Date.now()}`;
-
-    // 🔁 Semantic deduplication
-    const existing = await pineconeQuery(userId, embedding, 3, { module });
-    const isDuplicate = existing?.matches?.some(
-      (match: any) => match.score > 0.95,
-    );
-
-    if (isDuplicate) {
-      console.log("🔁 Duplicate skipped:", text);
-      return;
-    }
-
-    // 🏷️ Tag extraction
     if (tags.length === 0 && role === "user") {
       tags = await tagExtractor(text);
     }
 
-    // 💾 Store vector
-    await pineconeUpsert(userId, [
-      {
-        id: vectorId,
-        values: embedding,
-        metadata: {
-          userId,
-          text,
-          module,
-          role,
-          threadId,
-          createdAt: new Date().toISOString(),
-          ...(tags.length > 0 && { tags }),
-          ...(tone && { tone }),
-        },
-      },
-    ]);
+    const res = await fetch(`${MEMORY_API_URL}/storeMemory`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        module,
+        text,
+        role,
+        threadId,
+        tags,
+        tone,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      console.error("Memory store failed:", data.message || res.statusText);
+    }
   } catch (err) {
-    console.error("❌ Memory store failed:", err);
+    console.error("❌ Memory store error:", err);
   }
 };
 
-// 🔍 Retrieve similar memories
 export const retrieveMemory = async ({
   userId,
   module,
@@ -76,14 +60,17 @@ export const retrieveMemory = async ({
   query: string;
   topK?: number;
 }) => {
-  const embedding = await getEmbedding(query);
-  const result = await pineconeQuery(userId, embedding, topK, { module });
-  return result?.matches || [];
-};
+  try {
+    const res = await fetch(`${MEMORY_API_URL}/retrieveMemory`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, module, query, topK }),
+    });
 
-// 🧪 Get all memories for debugging
-export const getAllMemoriesForUser = async (userId: string): Promise<any[]> => {
-  const dummy = Array(1536).fill(0); // no vector input = closest to "everything"
-  const result = await pineconeQuery(userId, dummy, 100);
-  return result?.matches || [];
+    const data = await res.json();
+    return data?.matches || [];
+  } catch (err) {
+    console.error("❌ Memory retrieve error:", err);
+    return [];
+  }
 };

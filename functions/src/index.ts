@@ -2,7 +2,7 @@
 import express from "express";
 import cors from "cors";
 import { storeMemoryHandler, retrieveMemoryHandler } from "./memory";
-export { storeMemory } from "./callable/storeMemory";
+export { storeMemory } from "./utils/callable/storeMemory";
 
 const app = express();
 
