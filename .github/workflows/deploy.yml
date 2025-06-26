@@ -33,3 +33,5 @@ jobs:
 
       - name: Deploy Firebase Functions
         run: npx firebase deploy --only functions
+        working-directory: functions
+
