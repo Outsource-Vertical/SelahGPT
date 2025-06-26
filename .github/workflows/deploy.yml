@@ -28,4 +28,7 @@ jobs:
 
       - name: Deploy to Firebase
         working-directory: ${{ github.workspace }}
-        run: firebase deploy --only functions
+        run: pwd
+        ls -la
+        cat firebase.json || echo "firebase.json not found"
+          firebase deploy --only functions
