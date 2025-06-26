@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # 🔑 Required for Workload Identity Federation
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -32,9 +32,9 @@ jobs:
       - name: Upload workspace contents
         uses: actions/upload-artifact@v4
         with:
+          name: workspace-files
+          path: ./
 
-      - name: workspace-files
-        path: ./
       - name: 🔍 Debug: List workspace contents
         run: |
           echo "PWD: $(pwd)"
