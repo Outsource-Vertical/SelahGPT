@@ -23,7 +23,6 @@ Thumbs.db
 firebase-debug.log
 .firebase/
 .firebaserc.local
-firebase.json
 firestore.indexes.json
 firestore.rules
 
