@@ -32,5 +32,8 @@ jobs:
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
 
+      - name: Install dependencies
+        run: cd functions && npm install
+
       - name: Deploy to Firebase
         run: firebase deploy --only functions

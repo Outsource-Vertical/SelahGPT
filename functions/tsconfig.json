@@ -16,5 +16,5 @@
     "outDir": "lib"
   },
   "include": ["src"],
-  "extends": "expo/tsconfig.base"
+  "extends": "./tsconfig.base.json"
 }
