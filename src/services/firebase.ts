@@ -1,12 +1,13 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { ENV } from "@utils/env";
 import {
   getAuth,
   initializeAuth,
-  browserLocalPersistence,
   getReactNativePersistence,
 } from "firebase/auth";
+import { getFunctions } from "firebase/functions";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import { ENV } from "@utils/env";
 
 // Firebase config from environment
 const firebaseConfig = {
@@ -18,11 +19,16 @@ const firebaseConfig = {
   appId: ENV.FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 
-// Basic auth (no advanced persistence logic)
-const auth = getAuth(app);
-const db = getFirestore(app);
+// ✅ Use persistent auth
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
 
-export { auth, app, db };
+// Firestore + Functions with explicit region
+const db = getFirestore(app);
+const functions = getFunctions(app, "us-central1"); // 🔥 Set your deployed region here
+
+export { app, auth, db, functions };

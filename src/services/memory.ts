@@ -1,8 +1,11 @@
 import { tagExtractor } from "@utils/tagExtractor";
+import { auth } from "@services/firebase";
+import { getIdToken } from "firebase/auth";
 import uuid from "react-native-uuid";
 const uuidv4 = () => uuid.v4().toString();
 
-const MEMORY_API_URL = "https://<YOUR_CLOUD_RUN_URL>"; // ← Replace with actual deployed Cloud Run URL
+// ✅ Replace with your actual deployed Cloud Run URL
+const MEMORY_API_URL = "https://your-cloud-run-service-url.a.run.app";
 
 export const storeMemory = async ({
   userId,
@@ -26,9 +29,14 @@ export const storeMemory = async ({
       tags = await tagExtractor(text);
     }
 
+    const token = await getIdToken(auth.currentUser!); // 🔐 Auth token for secure APIs
+
     const res = await fetch(`${MEMORY_API_URL}/storeMemory`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         userId,
         module,
@@ -61,9 +69,14 @@ export const retrieveMemory = async ({
   topK?: number;
 }) => {
   try {
+    const token = await getIdToken(auth.currentUser!);
+
     const res = await fetch(`${MEMORY_API_URL}/retrieveMemory`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ userId, module, query, topK }),
     });
 
