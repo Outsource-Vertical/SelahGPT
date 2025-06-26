@@ -26,9 +26,9 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
+      - name: List files in workspace
+        run: ls -la ${{ github.workspace }}
+
       - name: Deploy to Firebase
         working-directory: ${{ github.workspace }}
-        run: pwd
-        ls -la
-        cat firebase.json || echo "firebase.json not found"
-          firebase deploy --only functions
+        run: firebase deploy --only functions
