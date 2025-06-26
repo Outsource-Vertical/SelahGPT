@@ -29,6 +29,17 @@ jobs:
       - name: List files in workspace
         run: ls -la ${{ github.workspace }}
 
+      - name: Upload workspace contents
+        uses: actions/upload-artifact@v4
+        with:
+
+      - name: workspace-files
+        path: ./
+      - name: 🔍 Debug: List workspace contents
+        run: |
+          echo "PWD: $(pwd)"
+          ls -la
+
       - name: Deploy to Firebase
         working-directory: ${{ github.workspace }}
         run: firebase deploy --only functions
